@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hare Scooter Jump</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #87ceeb;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: linear-gradient(#87ceeb 0%, #bde7ff 65%, #67b35c 65%, #4f9446 100%);
+    }
+
+    .hud {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      color: #fff;
+      font-size: 22px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .instructions {
+      position: absolute;
+      top: 48px;
+      left: 12px;
+      color: white;
+      font-size: 16px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+  <div class="hud">Score: <span id="score">0</span> | Lives: <span id="lives">3</span></div>
+  <div class="instructions">Press SPACE to jump onto scooters</div>
+  <canvas id="game" width="1000" height="500"></canvas>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+
+    let score = 0;
+    let lives = 3;
+    let gameOver = false;
+
+    const roadY = 330;
+
+    const hare = {
+      x: 140,
+      y: 285,
+      width: 50,
+      height: 50,
+      vy: 0,
+      gravity: 0.8,
+      jumpPower: -15,
+      grounded: true
+    };
+
+    const scooters = [];
+
+    function spawnScooter() {
+      const speed = 6 + Math.random() * 3;
+
+      scooters.push({
+        x: canvas.width + 100,
+        y: roadY + 10,
+        width: 120,
+        height: 40,
+        speed,
+        caught: false,
+        falling: false,
+        rotation: 0,
+        fallSpeed: 0,
+        passed: false
+      });
+    }
+
+    setInterval(() => {
+      if (!gameOver) spawnScooter();
+    }, 1400);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && hare.grounded && !gameOver) {
+        hare.vy = hare.jumpPower;
+        hare.grounded = false;
+      }
+
+      if (e.code === 'KeyR' && gameOver) resetGame();
+    });
+
+    function resetGame() {
+      score = 0;
+      lives = 3;
+      scooters.length = 0;
+      hare.y = 285;
+      hare.vy = 0;
+      hare.grounded = true;
+      gameOver = false;
+      scoreEl.textContent = score;
+      livesEl.textContent = lives;
+    }
+
+    function update() {
+      if (gameOver) return;
+
+      hare.vy += hare.gravity;
+      hare.y += hare.vy;
+
+      if (hare.y >= 285) {
+        hare.y = 285;
+        hare.vy = 0;
+        hare.grounded = true;
+      }
+
+      scooters.forEach((scooter, index) => {
+        scooter.x -= scooter.speed;
+
+        if (scooter.falling) {
+          scooter.rotation += 0.12;
+          scooter.y += scooter.fallSpeed;
+          scooter.fallSpeed += 0.4;
+        }
+
+        const hareBottom = hare.y + hare.height;
+
+        const collision =
+          !scooter.caught &&
+          hare.vy > 0 &&
+          hareBottom >= scooter.y - 25 &&
+          hareBottom <= scooter.y + 40 &&
+          hare.x + hare.width > scooter.x + 20 &&
+          hare.x < scooter.x + scooter.width - 20;
+
+        if (collision) {
+          scooter.caught = true;
+          scooter.falling = true;
+          scooter.fallSpeed = 8;
+
+          score += 1;
+          scoreEl.textContent = score;
+
+          hare.vy = -10;
+        }
+
+        const missed =
+          !scooter.caught &&
+          !scooter.passed &&
+          scooter.x + scooter.width < hare.x;
+
+        if (missed) {
+          scooter.passed = true;
+          lives -= 1;
+          livesEl.textContent = lives;
+
+          if (lives <= 0) {
+            gameOver = true;
+          }
+        }
+
+        if (scooter.x + scooter.width < 0) {
+          scooters.splice(index, 1);
+        }
+      });
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = '#ffd54a';
+      ctx.beginPath();
+      ctx.arc(850, 90, 45, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#444';
+      ctx.fillRect(0, roadY, canvas.width, 90);
+
+      ctx.fillStyle = '#fff';
+      for (let i = 0; i < canvas.width; i += 80) {
+        ctx.fillRect(i, roadY + 40, 40, 8);
+      }
+
+      ctx.fillStyle = '#2d7f35';
+      for (let i = 0; i < canvas.width; i += 70) {
+        ctx.beginPath();
+        ctx.arc(i, roadY - 10, 30, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawHare() {
+      ctx.fillStyle = '#d9c6a5';
+      ctx.beginPath();
+      ctx.ellipse(hare.x + 25, hare.y + 30, 22, 18, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(hare.x + 38, hare.y + 14, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillRect(hare.x + 28, hare.y - 20, 8, 28);
+      ctx.fillRect(hare.x + 40, hare.y - 24, 8, 32);
+
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.arc(hare.x + 42, hare.y + 12, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawScooter(scooter) {
+      ctx.save();
+      ctx.translate(scooter.x + scooter.width / 2, scooter.y + scooter.height / 2);
+      ctx.scale(-1, 1);
+
+      if (scooter.falling) ctx.rotate(scooter.rotation);
+
+      ctx.translate(-(scooter.x + scooter.width / 2), -(scooter.y + scooter.height / 2));
+
+      ctx.fillStyle = scooter.caught ? '#00b894' : '#ff5252';
+      ctx.fillRect(scooter.x + 20, scooter.y + 8, 60, 12);
+
+      ctx.fillRect(scooter.x + 65, scooter.y - 15, 5, 25);
+      ctx.fillRect(scooter.x + 55, scooter.y - 18, 20, 4);
+
+      ctx.fillStyle = '#222';
+      ctx.beginPath();
+      ctx.arc(scooter.x + 28, scooter.y + 26, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(scooter.x + 76, scooter.y + 26, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#3f51b5';
+      ctx.fillRect(scooter.x + 42, scooter.y - 25, 16, 28);
+
+      ctx.fillStyle = '#ffd7b5';
+      ctx.beginPath();
+      ctx.arc(scooter.x + 50, scooter.y - 34, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawGameOver() {
+      ctx.fillStyle = 'rgba(0,0,0,0.65)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 52px Arial';
+      ctx.fillText('Game Over', 350, 200);
+
+      ctx.font = '28px Arial';
+      ctx.fillText('Press R to restart', 380, 260);
+      ctx.fillText('Final Score: ' + score, 400, 320);
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawBackground();
+      drawHare();
+      scooters.forEach(drawScooter);
+      if (gameOver) drawGameOver();
+    }
+
+    function loop() {
+      update();
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script>
+</body>
+</html>
