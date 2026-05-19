@@ -76,7 +76,7 @@
       const gain = audioCtx.createGain();
 
       osc.type = 'square';
-      osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(520, audioCtx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(420, audioCtx.currentTime + 0.12);
 
       gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
@@ -90,21 +90,50 @@
     }
 
     function playFailSound() {
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      // main descending tone
+      osc1.type = 'sawtooth';
+      osc1.frequency.setValueAtTime(320, audioCtx.currentTime);
+      osc1.frequency.exponentialRampToValueAtTime(55, audioCtx.currentTime + 0.8);
+
+      // low sub tone for weight
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(140, audioCtx.currentTime);
+      osc2.frequency.exponentialRampToValueAtTime(45, audioCtx.currentTime + 0.8);
+
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.9);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc1.start();
+      osc2.start();
+
+      osc1.stop(audioCtx.currentTime + 0.9);
+      osc2.stop(audioCtx.currentTime + 0.9);
+    }
+
+    function playMissSound() {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
 
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(90, audioCtx.currentTime + 0.35);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.18);
 
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.18);
 
       osc.connect(gain);
       gain.connect(audioCtx.destination);
 
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.35);
+      osc.stop(audioCtx.currentTime + 0.18);
     }
 
     let startTime = Date.now();
@@ -221,6 +250,8 @@
 
         if (missed) {
           scooter.passed = true;
+
+          playMissSound();
           lives -= 1;
           livesEl.textContent = lives;
 
