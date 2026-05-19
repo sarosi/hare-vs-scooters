@@ -71,19 +71,35 @@
     // SOUND EFFECTS
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+    // AUDIO FX BUS (delay + feedback = simple reverb)
+    const fxBus = audioCtx.createGain();
+    fxBus.gain.value = 0.9;
+
+    const delayNode = audioCtx.createDelay(0.5);
+    delayNode.delayTime.value = 0.12;
+
+    const feedback = audioCtx.createGain();
+    feedback.gain.value = 0.25;
+
+    delayNode.connect(feedback);
+    feedback.connect(delayNode);
+
+    fxBus.connect(delayNode);
+    delayNode.connect(audioCtx.destination);
+
     function playBoing() {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
 
       osc.type = 'square';
-      osc.frequency.setValueAtTime(520, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(420, audioCtx.currentTime + 0.12);
+      osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(540, audioCtx.currentTime + 0.12);
 
       gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
 
       osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      gain.connect(fxBus);
 
       osc.start();
       osc.stop(audioCtx.currentTime + 0.2);
