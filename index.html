@@ -8,14 +8,13 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: #87ceeb;
       font-family: Arial, sans-serif;
     }
 
     canvas {
       display: block;
       margin: 0 auto;
-      background: linear-gradient(#87ceeb 0%, #bde7ff 65%, #67b35c 65%, #4f9446 100%);
+      background: #87ceeb;
     }
 
     .hud {
@@ -46,6 +45,7 @@
   <script>
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
+
     const scoreEl = document.getElementById('score');
     const livesEl = document.getElementById('lives');
 
@@ -68,7 +68,45 @@
 
     const scooters = [];
 
-    // difficulty system
+    // SOUND EFFECTS
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playBoing() {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(420, audioCtx.currentTime + 0.12);
+
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.2);
+    }
+
+    function playFailSound() {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(90, audioCtx.currentTime + 0.35);
+
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.35);
+    }
+
     let startTime = Date.now();
     let lastSpawnTime = 0;
 
@@ -83,7 +121,6 @@
 
     function spawnScooter() {
       const t = getElapsedSeconds();
-
       const speed = 5 + Math.random() * 2 + t * 0.08;
 
       scooters.push({
@@ -105,8 +142,7 @@
         hare.vy = hare.jumpPower;
         hare.grounded = false;
       }
-
-      if (e.code === 'KeyR' && gameOver) resetGame();
+      if (e.code === 'KeyR' && gameOver) location.reload();
     });
 
     function resetGame() {
@@ -119,9 +155,12 @@
       gameOver = false;
       startTime = Date.now();
       lastSpawnTime = 0;
+
       scoreEl.textContent = score;
       livesEl.textContent = lives;
     }
+
+    
 
     function update() {
       if (gameOver) return;
@@ -170,6 +209,8 @@
           score += 1;
           scoreEl.textContent = score;
 
+          playBoing();
+
           hare.vy = -10;
         }
 
@@ -183,23 +224,35 @@
           lives -= 1;
           livesEl.textContent = lives;
 
-          if (lives <= 0) gameOver = true;
-        }
-
-        if (scooter.x + scooter.width < 0) {
-          return;
+          if (lives <= 0) {
+            playFailSound();
+            gameOver = true;
+          }
         }
       });
 
-      scooters.filter(s => s.x + s.width >= 0);
+      
     }
 
     function drawBackground() {
+      const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      sky.addColorStop(0, '#87ceeb');
+      sky.addColorStop(0.65, '#bde7ff');
+      sky.addColorStop(0.65, '#67b35c');
+      sky.addColorStop(1, '#4f9446');
+
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       ctx.fillStyle = '#ffd54a';
       ctx.beginPath();
       ctx.arc(850, 90, 45, 0, Math.PI * 2);
       ctx.fill();
+    }
 
+    
+
+    function drawRoad() {
       ctx.fillStyle = '#444';
       ctx.fillRect(0, roadY, canvas.width, 90);
 
@@ -207,11 +260,24 @@
       for (let i = 0; i < canvas.width; i += 80) {
         ctx.fillRect(i, roadY + 40, 40, 8);
       }
+    }
 
-      ctx.fillStyle = '#2d7f35';
-      for (let i = 0; i < canvas.width; i += 70) {
+    function drawForegroundGrass() {
+      ctx.fillStyle = '#2f9e44';
+
+      for (let i = -1; i < 20; i++) {
+        const x = i * 80;
+
         ctx.beginPath();
-        ctx.arc(i, roadY - 10, 30, 0, Math.PI * 2);
+        ctx.moveTo(x, roadY + 5);
+        ctx.lineTo(x + 15, roadY - 20);
+        ctx.lineTo(x + 30, roadY + 5);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(x + 20, roadY + 5);
+        ctx.lineTo(x + 35, roadY - 25);
+        ctx.lineTo(x + 50, roadY + 5);
         ctx.fill();
       }
     }
@@ -270,25 +336,26 @@
       ctx.restore();
     }
 
-    function drawGameOver() {
-      ctx.fillStyle = 'rgba(0,0,0,0.65)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 52px Arial';
-      ctx.fillText('Game Over', 350, 200);
-
-      ctx.font = '28px Arial';
-      ctx.fillText('Press R to restart', 380, 260);
-      ctx.fillText('Final Score: ' + score, 400, 320);
-    }
-
     function render() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBackground();
+      drawRoad();
+      drawForegroundGrass();
+
       drawHare();
       scooters.forEach(drawScooter);
-      if (gameOver) drawGameOver();
+
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0,0,0,0.65)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 52px Arial';
+        ctx.fillText('Game Over', 350, 200);
+
+        ctx.font = '28px Arial';
+        ctx.fillText('Press R to restart', 380, 260);
+        ctx.fillText('Final Score: ' + score, 400, 320);
+      }
     }
 
     function loop() {
