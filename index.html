@@ -68,8 +68,23 @@
 
     const scooters = [];
 
+    // difficulty system
+    let startTime = Date.now();
+    let lastSpawnTime = 0;
+
+    function getElapsedSeconds() {
+      return (Date.now() - startTime) / 1000;
+    }
+
+    function getSpawnInterval() {
+      const t = getElapsedSeconds();
+      return Math.max(800, 2200 - t * 18);
+    }
+
     function spawnScooter() {
-      const speed = 6 + Math.random() * 3;
+      const t = getElapsedSeconds();
+
+      const speed = 5 + Math.random() * 2 + t * 0.08;
 
       scooters.push({
         x: canvas.width + 100,
@@ -84,10 +99,6 @@
         passed: false
       });
     }
-
-    setInterval(() => {
-      if (!gameOver) spawnScooter();
-    }, 1400);
 
     document.addEventListener('keydown', (e) => {
       if (e.code === 'Space' && hare.grounded && !gameOver) {
@@ -106,12 +117,22 @@
       hare.vy = 0;
       hare.grounded = true;
       gameOver = false;
+      startTime = Date.now();
+      lastSpawnTime = 0;
       scoreEl.textContent = score;
       livesEl.textContent = lives;
     }
 
     function update() {
       if (gameOver) return;
+
+      const now = Date.now();
+      const spawnInterval = getSpawnInterval();
+
+      if (now - lastSpawnTime > spawnInterval) {
+        spawnScooter();
+        lastSpawnTime = now;
+      }
 
       hare.vy += hare.gravity;
       hare.y += hare.vy;
@@ -122,7 +143,7 @@
         hare.grounded = true;
       }
 
-      scooters.forEach((scooter, index) => {
+      scooters.forEach((scooter) => {
         scooter.x -= scooter.speed;
 
         if (scooter.falling) {
@@ -162,15 +183,15 @@
           lives -= 1;
           livesEl.textContent = lives;
 
-          if (lives <= 0) {
-            gameOver = true;
-          }
+          if (lives <= 0) gameOver = true;
         }
 
         if (scooter.x + scooter.width < 0) {
-          scooters.splice(index, 1);
+          return;
         }
       });
+
+      scooters.filter(s => s.x + s.width >= 0);
     }
 
     function drawBackground() {
