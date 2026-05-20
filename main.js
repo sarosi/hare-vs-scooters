@@ -16,6 +16,10 @@ import {
 import {
   loadHighScore
 } from "./utils/highscore.js";
+import {
+  fetchLeaderboard,
+  submitScore
+} from "./services/leaderboard.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -26,12 +30,20 @@ const scenes = createSceneManager();
 const state = {
   score: 0,
   highscore: loadHighScore(),
+  leaderboard: [],
+  playerName: "PLAYER",
   lives: 3,
   gameOver: false,
   lastSpawn: 0,
   startTime: performance.now(),
   nextSpawnDelay: 1400
 };
+
+async function loadLeaderboard() {
+  state.leaderboard = await fetchLeaderboard();
+}
+
+loadLeaderboard();
 
 // PLAYER
 const player = createEntity(world);
@@ -66,6 +78,23 @@ addComponent(world, player, "animation", {
       scenes.current === SCENES.MENU &&
       e.code === "Enter"
     ) {
+      // ask once if no player name
+    if (
+      !state.playerName ||
+      state.playerName === "PLAYER"
+    ) {
+      const name = prompt(
+        "Enter your name:"
+      );
+
+      if (name && name.trim()) {
+        state.playerName = name
+          .replace(/[^a-z0-9 ]/gi, "")
+          .trim()
+          .substring(0, 12);
+      }
+    }
+
       scenes.current = SCENES.GAME;
       return;
     }

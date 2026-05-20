@@ -82,6 +82,13 @@ export function renderSystem(world, ctx, state) {
         500,
         310
       );
+      if (state.submittingScore) {
+        ctx.fillText(
+          "Submitting score...",
+          500,
+          380
+        );
+      }
     }
 
     // instructions
@@ -110,5 +117,18 @@ export function renderSystem(world, ctx, state) {
     );
 
     ctx.textAlign = "left";
+
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "#fff";
+
+    ctx.fillText("TOP PLAYERS", 500, 380);
+
+    state.leaderboard.forEach((entry, index) => {
+      ctx.fillText(
+        `${index + 1}. ${entry.player_name} - ${entry.score}`,
+        500,
+        420 + index * 28
+      );
+    });
   }
 }

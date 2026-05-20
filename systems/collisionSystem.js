@@ -7,6 +7,9 @@ import {
 import {
   saveHighScore
 } from "../utils/highscore.js";
+import {
+  handleGameOver
+} from "../game/gameOver.js";
 
 export function collisionSystem(world, state, playerId) {
   const scooters = query(world, ["pos", "size", "scooter"]);
@@ -94,7 +97,7 @@ export function collisionSystem(world, state, playerId) {
 
       // --- GAME OVER ---
       if (state.lives <= 0) {
-        state.gameOver = true;
+        handleGameOver(state);
         playGameOverSound();
       }
     }
