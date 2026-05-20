@@ -9,11 +9,25 @@ import { animationSystem } from "./systems/animationSystem.js";
 import { collisionSystem } from "./systems/collisionSystem.js";
 import { renderSystem } from "./systems/renderSystem.js";
 import { unlockAudio } from "./audio/sounds.js";
+import {
+  createSceneManager,
+  SCENES
+} from "./scenes/sceneManager.js";
+
+import {
+  renderMainMenu
+} from "./scenes/mainMenuScene.js";
+
+import {
+  updateGameplay,
+  renderGameplay
+} from "./scenes/gameplayScene.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 const world = createWorld();
+const scenes = createSceneManager();
 
 const state = {
   score: 0,
@@ -49,32 +63,93 @@ addComponent(world, player, "animation", {
 });
 
 // INPUT
-document.addEventListener("keydown", async (e) => {
-  await unlockAudio();
+  document.addEventListener("keydown", async (e) => {
+    await unlockAudio();
 
-  const vel = world.components.vel.get(player);
+    // --- MENU ---
+    if (
+      scenes.current === SCENES.MENU &&
+      e.code === "Enter"
+    ) {
+      scenes.current = SCENES.GAME;
+      return;
+    }
 
-  if (e.code === "Space") {
-    vel.y = -15;
-  }
+    // --- GAMEPLAY ---
+  if (scenes.current === SCENES.GAME) {
+    const vel = world.components.vel.get(player);
 
-  if (e.code === "KeyR" && state.gameOver) {
-    location.reload();
+    if (e.code === "Space") {
+      vel.y = -15;
+    }
+
+    if (
+      e.code === "KeyR" &&
+      state.gameOver
+    ) {
+      resetGame();
+    }
+
+    // back to menu
+    if (e.code === "Escape") {
+      scenes.current = SCENES.MENU;
+      resetGame();
+    }
   }
 });
 
-function loop() {
-  if (!state.gameOver) {
-    spawnSystem(world, state);
-    physicsSystem(world, 1);
-    movementSystem(world, 1);
-    animationSystem(world, 1);
-    collisionSystem(world, state, player);
+  function resetGame() {
+    // remove all scooter entities
+    for (const id of [...world.entities]) {
+      if (id === player) continue;
+
+      world.entities.delete(id);
+
+      for (const key in world.components) {
+        const c = world.components[key];
+
+        if (c instanceof Map) c.delete(id);
+        else c.delete(id);
+      }
+    }
+
+    // reset player
+    const pPos = world.components.pos.get(player);
+    const pVel = world.components.vel.get(player);
+
+    pPos.x = 140;
+    pPos.y = 285;
+
+    pVel.x = 0;
+    pVel.y = 0;
+
+    // reset state
+    state.score = 0;
+    state.lives = 3;
+    state.gameOver = false;
+
+    state.lastSpawn = 0;
+    state.startTime = performance.now();
+
+    document.getElementById("score").textContent = 0;
+    document.getElementById("lives").textContent = 3;
   }
 
-  renderSystem(world, ctx, state);
+  function loop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  requestAnimationFrame(loop);
-}
+    // --- MAIN MENU ---
+    if (scenes.current === SCENES.MENU) {
+      renderMainMenu(ctx);
+    }
 
-loop();
+    // --- GAMEPLAY ---
+    if (scenes.current === SCENES.GAME) {
+      updateGameplay(world, state, player);
+      renderGameplay(world, ctx, state);
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  loop();
