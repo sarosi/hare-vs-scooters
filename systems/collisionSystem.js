@@ -60,7 +60,17 @@ export function collisionSystem(world, state, playerId) {
     }
 
     // --- MISSED SCOOTER ---
-    if (sPos.x + sSize.w < 0) {
+    const alreadyCaught =
+      world.components.caught.has(id);
+
+    const falling =
+      world.components.falling.has(id);
+
+    if (
+      sPos.x + sSize.w < -50 &&
+      !alreadyCaught &&
+      !falling
+    ) {
       state.lives--;
       playMissSound();
 
