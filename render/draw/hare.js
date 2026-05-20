@@ -6,12 +6,12 @@ export function drawHare(ctx, pos, size, anim) {
     : 0;
 
   // --- TAIL ---
-  ctx.fillStyle = "#f5f0e8";
+  ctx.fillStyle = "#d9c6a5";
 
   ctx.beginPath();
   ctx.arc(
-    pos.x + 8,
-    pos.y + 34 + bounce,
+    pos.x + 4,
+    pos.y + 30 + bounce,
     7,
     0,
     Math.PI * 2
