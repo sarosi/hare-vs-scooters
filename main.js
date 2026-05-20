@@ -1,21 +1,21 @@
 import { createWorld } from "./ecs/world.js";
 import { createEntity } from "./ecs/entity.js";
 import { addComponent } from "./ecs/components.js";
-
 import { unlockAudio } from "./audio/sounds.js";
 import {
   createSceneManager,
   SCENES
 } from "./scenes/sceneManager.js";
-
 import {
   renderMainMenu
 } from "./scenes/mainMenuScene.js";
-
 import {
   updateGameplay,
   renderGameplay
 } from "./scenes/gameplayScene.js";
+import {
+  loadHighScore
+} from "./utils/highscore.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -25,6 +25,7 @@ const scenes = createSceneManager();
 
 const state = {
   score: 0,
+  highscore: loadHighScore(),
   lives: 3,
   gameOver: false,
   lastSpawn: 0,

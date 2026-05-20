@@ -4,6 +4,9 @@ import {
   playMissSound,
   playGameOverSound
 } from "../audio/sounds.js";
+import {
+  saveHighScore
+} from "../utils/highscore.js";
 
 export function collisionSystem(world, state, playerId) {
   const scooters = query(world, ["pos", "size", "scooter"]);
@@ -34,6 +37,9 @@ export function collisionSystem(world, state, playerId) {
 
       playJumpSound();
       state.score++;
+      state.highScore = saveHighScore(
+        state.score
+      );
 
       document.getElementById("score").textContent = state.score;
 

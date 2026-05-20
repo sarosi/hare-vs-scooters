@@ -43,7 +43,7 @@ export function renderSystem(world, ctx, state) {
 
     // panel
     ctx.fillStyle = "rgba(255,255,255,0.08)";
-    ctx.fillRect(260, 120, 480, 240);
+    ctx.fillRect(260, 120, 480, 260);
 
     ctx.strokeStyle = "rgba(255,255,255,0.2)";
     ctx.lineWidth = 2;
@@ -60,10 +60,29 @@ export function renderSystem(world, ctx, state) {
     ctx.font = "28px Arial";
 
     ctx.fillText(
-      `Final Score: ${state.score}`,
+      `Your Score: ${state.score}`,
       500,
       235
     );
+
+    ctx.font = "22px Arial";
+
+    ctx.fillText(
+      `High Score: ${state.highScore}`,
+      500,
+      260
+    );
+
+    if (state.score >= state.highScore) {
+      ctx.fillStyle = "#ffd54a";
+      ctx.font = "bold 26px Arial";
+
+      ctx.fillText(
+        "NEW HIGH SCORE!",
+        500,
+        310
+      );
+    }
 
     // instructions
     ctx.font = "20px Arial";
@@ -91,5 +110,5 @@ export function renderSystem(world, ctx, state) {
     );
 
     ctx.textAlign = "left";
-}
+  }
 }
