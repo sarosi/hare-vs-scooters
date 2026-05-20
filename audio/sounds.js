@@ -52,6 +52,33 @@ export function playJumpSound() {
   osc.stop(audioCtx.currentTime + 0.2);
 }
 
+export function playCarrotSound() {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = "sine";
+
+  osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+
+  osc.frequency.exponentialRampToValueAtTime(
+    880,
+    audioCtx.currentTime + 0.3
+  );
+
+  gain.gain.setValueAtTime(0.22, audioCtx.currentTime);
+
+  gain.gain.exponentialRampToValueAtTime(
+    0.001,
+    audioCtx.currentTime + 0.35
+  );
+
+  osc.connect(gain);
+  gain.connect(reverb);
+
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.35);
+}
+
 export function playMissSound() {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();

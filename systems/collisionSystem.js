@@ -2,7 +2,8 @@ import { query } from "../ecs/query.js";
 import {
   playJumpSound,
   playMissSound,
-  playGameOverSound
+  playGameOverSound,
+  playCarrotSound
 } from "../audio/sounds.js";
 import {
   saveHighScore
@@ -43,6 +44,12 @@ export function collisionSystem(world, state, playerId) {
       state.highScore = saveHighScore(
         state.score
       );
+
+      if (world.components.carrotCarrier.has(id)) {
+        playCarrotSound();
+        state.lives++;
+        document.getElementById("lives").textContent = state.lives;
+      } 
 
       document.getElementById("score").textContent = state.score;
 

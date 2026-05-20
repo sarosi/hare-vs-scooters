@@ -18,12 +18,14 @@ export function renderEntity(ctx, world, id) {
       const rotation =
         world.components.rotation?.get?.(id) || 0;
 
+        const hasCarrot = world.components.carrotCarrier?.has(id);
         drawScooter(
             ctx,
             pos,
             size,
             anim,
-            rotation
+            rotation,
+            hasCarrot
         );
       break;
   }

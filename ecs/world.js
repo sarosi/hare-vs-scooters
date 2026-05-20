@@ -13,6 +13,7 @@ export function createWorld() {
       animation: new Map(),
 
       scooter: new Set(),
+      carrotCarrier: new Set(),
       player: new Set(),
 
       rotation: new Map(),

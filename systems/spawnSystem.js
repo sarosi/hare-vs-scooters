@@ -51,6 +51,10 @@ export function spawnSystem(world, state) {
   });
 
   addComponent(world, id, "scooter");
+  // 15% chance for carrot scooter
+  if (Math.random() < 0.15) {
+    world.components.carrotCarrier.add(id);
+  }
   addComponent(world, id, "rotation", 0);
   addComponent(world, id, "angularVelocity", 0);
 

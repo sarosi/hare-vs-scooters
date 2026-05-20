@@ -3,7 +3,8 @@ export function drawScooter(
   pos,
   size,
   anim,
-  rotation = 0
+  rotation = 0,
+  hasCarrot = false
 ) {
   ctx.save();
   ctx.translate(
@@ -79,6 +80,28 @@ export function drawScooter(
   ctx.moveTo(pos.x + 46, pos.y - 18);
   ctx.lineTo(pos.x + 62, pos.y - 10);
   ctx.stroke();
+
+  if (hasCarrot) {
+  // carrot body
+  ctx.fillStyle = "#ff7b00";
+
+  ctx.beginPath();
+  ctx.moveTo(pos.x + 18, pos.y - 22);
+  ctx.lineTo(pos.x + 30, pos.y - 18);
+  ctx.lineTo(pos.x + 20, pos.y - 4);
+  ctx.closePath();
+  ctx.fill();
+
+  // carrot leaves
+  ctx.fillStyle = "#2f9e44";
+
+  ctx.beginPath();
+  ctx.moveTo(pos.x + 18, pos.y - 22);
+  ctx.lineTo(pos.x + 14, pos.y - 30);
+  ctx.lineTo(pos.x + 22, pos.y - 26);
+  ctx.closePath();
+  ctx.fill();
+}
 
   ctx.restore();
 }
