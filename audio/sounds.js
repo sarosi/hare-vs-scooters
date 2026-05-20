@@ -1,5 +1,15 @@
 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
 
+let muted = false;
+
+export function setMuted(value) {
+  muted = value;
+}
+
+function canPlay() {
+  return !muted;
+}
+
 export const audioCtx = new AudioContextClass();
 
 export async function unlockAudio() {
@@ -26,6 +36,7 @@ function createReverb() {
 const reverb = createReverb();
 
 export function playJumpSound() {
+  if (!canPlay()) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
@@ -53,6 +64,7 @@ export function playJumpSound() {
 }
 
 export function playCarrotSound() {
+  if (!canPlay()) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
@@ -80,6 +92,7 @@ export function playCarrotSound() {
 }
 
 export function playMissSound() {
+  if (!canPlay()) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
@@ -107,6 +120,7 @@ export function playMissSound() {
 }
 
 export function playGameOverSound() {
+  if (!canPlay()) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 

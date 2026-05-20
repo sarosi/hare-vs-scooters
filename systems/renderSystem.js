@@ -35,6 +35,22 @@ export function renderSystem(world, ctx, state) {
     renderEntity(ctx, world, id);
   }
 
+  // --- MUTE BUTTON ---
+  ctx.fillStyle = "rgba(0,0,0,0.45)";
+  ctx.fillRect(900, 20, 70, 36);
+
+  ctx.strokeStyle = "#fff";
+  ctx.strokeRect(900, 20, 70, 36);
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "18px Arial";
+
+  ctx.fillText(
+    state.muted ? "🔇" : "🔊",
+    922,
+    45
+  );
+
   // --- UI ---
   if (state.gameOver) {
   // dark overlay

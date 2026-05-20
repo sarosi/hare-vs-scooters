@@ -20,6 +20,7 @@ import {
   fetchLeaderboard,
   submitScore
 } from "./services/leaderboard.js";
+import { setMuted } from "./audio/sounds.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -36,7 +37,8 @@ const state = {
   gameOver: false,
   lastSpawn: 0,
   startTime: performance.now(),
-  nextSpawnDelay: 1400
+  nextSpawnDelay: 1400,
+  muted: false,
 };
 
 async function loadLeaderboard() {
@@ -66,6 +68,25 @@ addComponent(world, player, "animation", {
   clips: {
     idle: { frames: [0,1,2], speed: 0.2 },
     jump: { frames: [3,4,5], speed: 0.1 }
+  }
+});
+
+canvas.addEventListener("click", (e) => {
+  const rect = canvas.getBoundingClientRect();
+
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+
+  // mute button bounds
+  if (
+    mouseX >= 900 &&
+    mouseX <= 970 &&
+    mouseY >= 20 &&
+    mouseY <= 56
+  ) {
+    state.muted = !state.muted;
+
+    setMuted(state.muted);
   }
 });
 
