@@ -2,12 +2,6 @@ import { createWorld } from "./ecs/world.js";
 import { createEntity } from "./ecs/entity.js";
 import { addComponent } from "./ecs/components.js";
 
-import { spawnSystem } from "./systems/spawnSystem.js";
-import { movementSystem } from "./systems/movementSystem.js";
-import { physicsSystem } from "./systems/physicsSystem.js";
-import { animationSystem } from "./systems/animationSystem.js";
-import { collisionSystem } from "./systems/collisionSystem.js";
-import { renderSystem } from "./systems/renderSystem.js";
 import { unlockAudio } from "./audio/sounds.js";
 import {
   createSceneManager,
