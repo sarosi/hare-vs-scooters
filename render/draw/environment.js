@@ -1,5 +1,14 @@
+
+const clouds = Array.from({ length: 5 }, (_, i) => ({
+  x: i * 240 + Math.random() * 120,
+  y: 40 + Math.random() * 120,
+  speed: 0.08 + Math.random() * 0.18,
+  scale: 0.7 + Math.random() * 0.9
+}));
+
 export function drawEnvironment(ctx) {
-  // --- SKY ---
+  
+    // --- SKY ---
   ctx.fillStyle = "#87ceeb";
   ctx.fillRect(0, 0, 1000, 500);
 
@@ -11,9 +20,16 @@ export function drawEnvironment(ctx) {
   ctx.fill();
 
   // --- CLOUDS ---
-  drawCloud(ctx, 120, 80);
-  drawCloud(ctx, 320, 120);
-  drawCloud(ctx, 620, 70);
+  for (const cloud of clouds) {
+  cloud.x -= cloud.speed;
+
+  // wrap around
+  if (cloud.x < -120) {
+      cloud.x = 1100;
+  }
+
+drawCloud(ctx, cloud.x, cloud.y);
+}
 
   // --- ROAD ---
   ctx.fillStyle = "#444";

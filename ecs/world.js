@@ -18,6 +18,9 @@ export function createWorld() {
       rotation: new Map(),
       angularVelocity: new Map(),
       falling: new Set(),
+      caught: new Set(),
+
+      cloud: new Map(),
     }
   };
 }

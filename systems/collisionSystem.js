@@ -28,22 +28,23 @@ export function collisionSystem(world, state, playerId) {
 
     // --- SUCCESSFUL HIT ---
     if (hit) {
+      // mark scooter as falling and caught (for score)
+      world.components.caught.add(id);
+      world.components.falling.add(id);
+
       playJumpSound();
       state.score++;
 
       document.getElementById("score").textContent = state.score;
 
       // bounce upward
-      pVel.y = -12;
+      pVel.y = -10;
 
       // fall scooter
       // already falling? skip
-      if (world.components.falling.has(id)) {
+      if (world.components.falling.has(id) || world.components.caught.has(id)) {
         continue;
       }
-
-      // mark scooter as falling
-      world.components.falling.add(id);
 
       const vel = world.components.vel.get(id);
 

@@ -73,7 +73,10 @@ addComponent(world, player, "animation", {
   if (scenes.current === SCENES.GAME) {
     const vel = world.components.vel.get(player);
 
-    if (e.code === "Space") {
+    if (
+      e.code === "Space" &&
+      Math.abs(vel.y) < 0.1
+    ) {
       vel.y = -11;
     }
 
