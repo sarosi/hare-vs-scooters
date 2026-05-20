@@ -1,5 +1,22 @@
-export function drawScooter(ctx, pos, size) {
+export function drawScooter(
+  ctx,
+  pos,
+  size,
+  anim,
+  rotation = 0
+) {
   ctx.save();
+  ctx.translate(
+    pos.x + size.w / 2,
+    pos.y + size.h / 2
+  );
+
+  ctx.rotate(rotation);
+
+  ctx.translate(
+    -(pos.x + size.w / 2),
+    -(pos.y + size.h / 2)
+  );
 
   // mirror scooter direction
   ctx.translate(pos.x + size.w / 2, 0);

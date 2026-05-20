@@ -36,15 +36,24 @@ export function collisionSystem(world, state, playerId) {
       // bounce upward
       pVel.y = -12;
 
-      // remove scooter
-      world.entities.delete(id);
-
-      for (const key in world.components) {
-        const c = world.components[key];
-
-        if (c instanceof Map) c.delete(id);
-        else c.delete(id);
+      // fall scooter
+      // already falling? skip
+      if (world.components.falling.has(id)) {
+        continue;
       }
+
+      // mark scooter as falling
+      world.components.falling.add(id);
+
+      const vel = world.components.vel.get(id);
+
+      vel.x *= 0.4;
+      vel.y = -8;
+
+      world.components.angularVelocity.set(
+        id,
+        0.15
+      );
 
       continue;
     }

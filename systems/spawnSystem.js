@@ -51,6 +51,8 @@ export function spawnSystem(world, state) {
   });
 
   addComponent(world, id, "scooter");
+  addComponent(world, id, "rotation", 0);
+  addComponent(world, id, "angularVelocity", 0);
 
   // --- RANDOMIZED NEXT SPAWN ---
   const baseDelay = 1400 - diff.spawnReduction;

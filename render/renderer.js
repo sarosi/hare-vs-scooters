@@ -15,7 +15,16 @@ export function renderEntity(ctx, world, id) {
       break;
 
     case "scooter":
-      drawScooter(ctx, pos, size, anim);
+      const rotation =
+        world.components.rotation?.get?.(id) || 0;
+
+        drawScooter(
+            ctx,
+            pos,
+            size,
+            anim,
+            rotation
+        );
       break;
   }
 }
