@@ -1,4 +1,45 @@
 <!DOCTYPE html>
+<style>
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: #111;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #gameContainer {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  canvas {
+    width: min(100vw, 1000px);
+    height: auto;
+
+    aspect-ratio: 2 / 1;
+
+    image-rendering: auto;
+
+    display: block;
+
+    border-radius: 12px;
+    box-shadow:
+        0 0 40px rgba(0,0,0,0.5);
+  }
+</style>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -19,14 +60,14 @@
   </style>
 </head>
 <body>
+  <div id="gameContainer">
+    <canvas
+      id="game"
+      width="1000"
+      height="500"
+    ></canvas>
+  </div>
 
-<div class="hud">
-  Score: <span id="score">0</span> | Lives: <span id="lives">3</span>
-</div>
-
-<canvas id="game" width="1000" height="500"></canvas>
-
-<script type="module" src="./main.js"></script>
-
+  <script type="module" src="./main.js"></script>
 </body>
 </html>
