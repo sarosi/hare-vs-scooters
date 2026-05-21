@@ -75,7 +75,7 @@ export function renderSystem(world, ctx, state) {
   // HUD
   // ==================================================
 
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle = "#3f2b0c";
 
   ctx.font =
     `${Math.floor(24 * uiScale)}px Arial`;
