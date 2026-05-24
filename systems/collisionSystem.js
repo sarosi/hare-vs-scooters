@@ -48,10 +48,8 @@ export function collisionSystem(world, state, playerId) {
       if (world.components.carrotCarrier.has(id)) {
         playCarrotSound();
         state.lives++;
-        //document.getElementById("lives").textContent = state.lives;
       } 
 
-      //document.getElementById("score").textContent = state.score;
 
       // bounce upward
       pVel.y = -10;
@@ -90,7 +88,6 @@ export function collisionSystem(world, state, playerId) {
       state.lives--;
       playMissSound();
 
-      //document.getElementById("lives").textContent = state.lives;
 
       // remove scooter
       world.entities.delete(id);
