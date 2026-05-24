@@ -25,9 +25,11 @@ import { setMuted } from "./audio/sounds.js";
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-const world = createWorld();
-const scenes = createSceneManager();
+async function loadLeaderboard() {
+  state.leaderboard = await fetchLeaderboard();
+}
 
+loadLeaderboard();
 const state = {
   score: 0,
   highscore: loadHighScore(),
@@ -41,11 +43,9 @@ const state = {
   muted: false,
 };
 
-async function loadLeaderboard() {
-  state.leaderboard = await fetchLeaderboard();
-}
+const world = createWorld();
+const scenes = createSceneManager();
 
-loadLeaderboard();
 
 // PLAYER
 const player = createEntity(world);
