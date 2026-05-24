@@ -45,6 +45,7 @@ const state = {
   startTime: performance.now(),
   nextSpawnDelay: 1400,
   muted: false,
+  paused: false,
 };
 
 const world = createWorld();
@@ -76,6 +77,7 @@ addComponent(world, player, "animation", {
 });
 
 
+// CONTROL INPUT ON MOBILE
 canvas.addEventListener(
   "pointerdown",
   (e) => {
@@ -99,12 +101,38 @@ canvas.addEventListener(
       return;
     }
 
+    // pause button
+    if (
+      x >= canvas.width - 200 &&
+      x <= canvas.width - 110 &&
+      y >= 20 &&
+      y <= 60
+    ) {
+      state.paused =
+        !state.paused;
+
+      return;
+    }
+
+    // quit button
+    if (
+      x >= canvas.width - 310 &&
+      x <= canvas.width - 220 &&
+      y >= 20 &&
+      y <= 60
+    ) {
+      scenes.current =
+        SCENES.MENU;
+      resetGame();
+      return;
+}
+
 
     tryJump();
   }
 );
 
-
+// CONTROL INPUT - KEYBOARD
 document.addEventListener(
   "keydown",
   (e) => {
@@ -166,11 +194,29 @@ document.addEventListener(
 
         setMuted(state.muted);
       }
+
+      // pause
+      if (e.code === "KeyP") {
+        state.paused =
+          !state.paused;
+      }
+
+      // quit
+      if (e.code === "KeyQ") {
+        scenes.current =
+          SCENES.MENU;
+
+        resetGame();
+      }
     }
   }
 );
 
 function tryJump() {
+
+  if (state.paused) {
+    return;
+  }
 
   if (
     state.gameOver ||
@@ -192,8 +238,6 @@ function tryJump() {
     playJumpSound();
   }
 }
-
-// INPUT
 
 
 function handlePointerDown(e) {
@@ -287,7 +331,13 @@ document.addEventListener(
 
     // --- GAMEPLAY ---
     if (scenes.current === SCENES.GAME) {
-      updateGameplay(world, state, player);
+      if (!state.paused) {
+        updateGameplay(
+          world,
+          state,
+          player
+        );
+    }
       renderGameplay(world, ctx, state);
     }
 

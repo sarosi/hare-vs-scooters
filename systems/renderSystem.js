@@ -135,6 +135,75 @@ export function renderSystem(world, ctx, state) {
   );
 
   // ==================================================
+// PAUSE BUTTON
+// ==================================================
+
+ctx.fillStyle =
+  "rgba(0,0,0,0.45)";
+
+ctx.fillRect(
+  canvas.width - 200,
+  20,
+  90,
+  40
+);
+
+ctx.strokeStyle = "#fff";
+
+ctx.strokeRect(
+  canvas.width - 200,
+  20,
+  90,
+  40
+);
+
+ctx.fillStyle = "#fff";
+
+ctx.font =
+  `${Math.floor(18 * uiScale)}px Arial`;
+
+ctx.textAlign = "center";
+
+ctx.fillText(
+  state.paused ? "RESUME" : "PAUSE",
+  canvas.width - 155,
+  46
+);
+
+// ==================================================
+// QUIT BUTTON
+// ==================================================
+
+ctx.fillStyle =
+  "rgba(0,0,0,0.45)";
+
+ctx.fillRect(
+  canvas.width - 310,
+  20,
+  90,
+  40
+);
+
+ctx.strokeStyle = "#fff";
+
+ctx.strokeRect(
+  canvas.width - 310,
+  20,
+  90,
+  40
+);
+
+ctx.fillStyle = "#fff";
+
+ctx.fillText(
+  "QUIT",
+  canvas.width - 265,
+  46
+);
+
+ctx.textAlign = "left";
+
+  // ==================================================
   // GAME OVER OVERLAY
   // ==================================================
 
@@ -292,4 +361,43 @@ export function renderSystem(world, ctx, state) {
 
     ctx.textAlign = "left";
   }
+
+  if (
+  state.paused &&
+  !state.gameOver
+) {
+  ctx.fillStyle =
+    "rgba(0,0,0,0.5)";
+
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  ctx.fillStyle = "#fff";
+
+  ctx.textAlign = "center";
+
+  ctx.font =
+    `${Math.floor(48 * uiScale)}px Arial`;
+
+  ctx.fillText(
+    "PAUSED",
+    canvas.width / 2,
+    canvas.height / 2
+  );
+
+  ctx.font =
+    `${Math.floor(22 * uiScale)}px Arial`;
+
+  ctx.fillText(
+    "Press P or Tap Pause",
+    canvas.width / 2,
+    canvas.height / 2 + 50
+  );
+
+  ctx.textAlign = "left";
+}
 }
