@@ -21,6 +21,7 @@ import {
   submitScore
 } from "./services/leaderboard.js";
 import { setMuted } from "./audio/sounds.js";
+import { getUILayout } from "./ui/layout.js";
 
 const isMobile =
   "ontouchstart" in window;
@@ -76,24 +77,29 @@ addComponent(world, player, "animation", {
   }
 });
 
+function inside(px, py, r) {
+  return (
+    px >= r.x &&
+    px <= r.x + r.w &&
+    py >= r.y &&
+    py <= r.y + r.h
+  );
+}
 
 // CONTROL INPUT ON MOBILE
 canvas.addEventListener(
   "pointerdown",
   (e) => {
-    const rect =
-      canvas.getBoundingClientRect();
 
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+    const buttons = getUILayout(canvas);
 
     // mute button
-    if (
-      x >= canvas.width - 90 &&
-      x <= canvas.width - 20 &&
-      y >= 20 &&
-      y <= 56
-    ) {
+    if (inside(x, y, buttons.mute)) {
       state.muted = !state.muted;
 
       setMuted(state.muted);
@@ -102,32 +108,19 @@ canvas.addEventListener(
     }
 
     // pause button
-    if (
-      x >= canvas.width - 200 &&
-      x <= canvas.width - 110 &&
-      y >= 20 &&
-      y <= 60
-    ) {
-      state.paused =
-        !state.paused;
-
+    if (inside(x, y, buttons.pause)) {
+      state.paused = !state.paused;
       return;
     }
 
     // quit button
-    if (
-      x >= canvas.width - 310 &&
-      x <= canvas.width - 220 &&
-      y >= 20 &&
-      y <= 60
-    ) {
-      scenes.current =
-        SCENES.MENU;
+    if (inside(x, y, buttons.quit)) {
+      scenes.current = SCENES.MENU;
       resetGame();
       return;
-}
+    }
 
-
+    // GaMEPLAY - JUMP
     tryJump();
   }
 );

@@ -39,21 +39,25 @@
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
+
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 </style>
-<meta
-  name="viewport"
-  content="
-    width=device-width,
-    initial-scale=1,
-    maximum-scale=1,
-    user-scalable=no
-  "
-/>
 <html lang="en">
 <head>
+  <meta
+    name="viewport"
+    content="
+        width=device-width,
+        initial-scale=1,
+        maximum-scale=1,
+        user-scalable=no
+    "
+  />
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Hare ECS Game</title>
   <style>
     body { margin: 0; overflow: hidden; font-family: Arial; }

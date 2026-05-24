@@ -1,9 +1,11 @@
 import { renderEntity } from "../render/renderer.js";
 import { drawEnvironment } from "../render/draw/environment.js";
 import { query } from "../ecs/query.js";
+import { getUILayout } from "../ui/layout.js";
 
 export function renderSystem(world, ctx, state) {
   const canvas = ctx.canvas;
+  const buttons = getUILayout(canvas);
 
   // ==================================================
   // FRAME RESET
@@ -26,6 +28,7 @@ export function renderSystem(world, ctx, state) {
 
   drawEnvironment(ctx);
 
+  const topInset = 40;
   const layers = {
     background: [],
     world: [],
@@ -82,22 +85,25 @@ export function renderSystem(world, ctx, state) {
 
   ctx.textAlign = "left";
 
+  const ui =
+  getUILayout(canvas);
+
   ctx.fillText(
     `Score: ${state.score}`,
-    20,
-    40
+    ui.score.x,
+    ui.score.y
   );
 
   ctx.fillText(
     `Lives: ${state.lives}`,
-    20,
-    75
+    ui.lives.x,
+    ui.lives.y
   );
 
   ctx.fillText(
     `High Score: ${state.highScore}`,
-    20,
-    110
+    ui.highScore.x,
+    ui.highScore.y
   );
 
   // ==================================================
@@ -108,19 +114,19 @@ export function renderSystem(world, ctx, state) {
     "rgba(0,0,0,0.45)";
 
   ctx.fillRect(
-    canvas.width - 90,
-    20,
-    70,
-    36
+    buttons.mute.x,
+    buttons.mute.y,
+    buttons.mute.w,
+    buttons.mute.h
   );
 
   ctx.strokeStyle = "#fff";
 
-  ctx.strokeRect(
-    canvas.width - 90,
-    20,
-    70,
-    36
+  ctx.fillRect(
+    buttons.mute.x,
+    buttons.mute.y,
+    buttons.mute.w,
+    buttons.mute.h
   );
 
   ctx.fillStyle = "#fff";
@@ -130,8 +136,8 @@ export function renderSystem(world, ctx, state) {
 
   ctx.fillText(
     state.muted ? "🔇" : "🔊",
-    canvas.width - 68,
-    45
+    buttons.mute.x + 25,
+    buttons.mute.y + buttons.mute.h / 2 + 5
   );
 
   // ==================================================
@@ -142,19 +148,19 @@ ctx.fillStyle =
   "rgba(0,0,0,0.45)";
 
 ctx.fillRect(
-  canvas.width - 200,
-  20,
-  90,
-  40
+  buttons.pause.x,
+  buttons.pause.y,
+  buttons.pause.w,
+  buttons.pause.h
 );
 
 ctx.strokeStyle = "#fff";
 
 ctx.strokeRect(
-  canvas.width - 200,
-  20,
-  90,
-  40
+  buttons.pause.x,
+  buttons.pause.y,
+  buttons.pause.w,
+  buttons.pause.h
 );
 
 ctx.fillStyle = "#fff";
@@ -166,8 +172,8 @@ ctx.textAlign = "center";
 
 ctx.fillText(
   state.paused ? "RESUME" : "PAUSE",
-  canvas.width - 155,
-  46
+  buttons.pause.x + buttons.pause.w / 2,
+  buttons.pause.y + buttons.pause.h / 2 + 10
 );
 
 // ==================================================
@@ -178,27 +184,27 @@ ctx.fillStyle =
   "rgba(0,0,0,0.45)";
 
 ctx.fillRect(
-  canvas.width - 310,
-  20,
-  90,
-  40
+  buttons.quit.x,
+  buttons.quit.y,
+  buttons.quit.w,
+  buttons.quit.h
 );
 
 ctx.strokeStyle = "#fff";
 
 ctx.strokeRect(
-  canvas.width - 310,
-  20,
-  90,
-  40
+  buttons.quit.x,
+  buttons.quit.y,
+  buttons.quit.w,
+  buttons.quit.h
 );
 
 ctx.fillStyle = "#fff";
 
 ctx.fillText(
   "QUIT",
-  canvas.width - 265,
-  46
+  buttons.quit.x + buttons.quit.w / 2,
+  buttons.quit.y + buttons.quit.h / 2 + 10
 );
 
 ctx.textAlign = "left";
@@ -264,7 +270,7 @@ ctx.textAlign = "left";
     ctx.fillText(
       "GAME OVER",
       canvas.width / 2,
-      panelY + 60
+      panelY + 60 + topInset
     );
 
     // score
@@ -274,7 +280,7 @@ ctx.textAlign = "left";
     ctx.fillText(
       `Your Score: ${state.score}`,
       canvas.width / 2,
-      panelY + 120
+      panelY + 120 + topInset
     );
 
     ctx.font =
@@ -283,7 +289,7 @@ ctx.textAlign = "left";
     ctx.fillText(
       `High Score: ${state.highScore}`,
       canvas.width / 2,
-      panelY + 155
+      panelY + 155 + topInset
     );
 
     // new high score
