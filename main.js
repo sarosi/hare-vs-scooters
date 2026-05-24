@@ -30,6 +30,7 @@ async function loadLeaderboard() {
 }
 
 loadLeaderboard();
+
 const state = {
   score: 0,
   highscore: loadHighScore(),
@@ -145,6 +146,35 @@ canvas.addEventListener("click", (e) => {
     }
   }
 });
+
+canvas.addEventListener(
+  "touchstart",
+  (e) => {
+    e.preventDefault();
+
+    if (state.gameOver) {
+      return;
+    }
+
+    jump(world);
+  },
+  { passive: false }
+);
+
+function handleJumpInput() {
+  if (state.gameOver) return;
+
+  jump(world);
+}
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+    if (document.hidden) {
+      state.paused = true;
+    }
+  }
+);
 
   function resetGame() {
     // remove all scooter entities

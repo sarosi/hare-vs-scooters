@@ -26,20 +26,25 @@
   }
 
   canvas {
-    width: min(100vw, 1000px);
-    height: auto;
+  width: 100vw;
+  height: auto;
 
-    aspect-ratio: 2 / 1;
+  max-width: 1000px;
 
-    image-rendering: auto;
+  aspect-ratio: 2 / 1;
 
-    display: block;
-
-    border-radius: 12px;
-    box-shadow:
-        0 0 40px rgba(0,0,0,0.5);
-  }
+  display: block;
+}
 </style>
+<meta
+  name="viewport"
+  content="
+    width=device-width,
+    initial-scale=1,
+    maximum-scale=1,
+    user-scalable=no
+  "
+/>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
