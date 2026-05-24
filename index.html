@@ -14,6 +14,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    touch-action: manipulation;
   }
 
   #gameContainer {
@@ -35,6 +36,9 @@
 
   display: block;
   touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 </style>
 <meta

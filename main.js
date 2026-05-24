@@ -25,6 +25,7 @@ import { setMuted } from "./audio/sounds.js";
 const isMobile =
   "ontouchstart" in window;
 const canvas = document.getElementById("game");
+canvas.style.touchAction = "none";
 const ctx = canvas.getContext("2d");
 
 async function loadLeaderboard() {
@@ -103,13 +104,14 @@ canvas.addEventListener(
   }
 );
 
+
 document.addEventListener(
   "keydown",
   (e) => {
 
-    // ==========================================
-    // MENU
-    // ==========================================
+    // ==============================
+    // MAIN MENU
+    // ==============================
 
     if (
       scenes.current === SCENES.MENU
@@ -117,35 +119,18 @@ document.addEventListener(
 
       if (e.code === "Enter") {
 
-        // ask name once
-        if (
-          !state.playerName ||
-          state.playerName === "PLAYER"
-        ) {
-          const name = prompt(
-            "Enter your bunny name:"
-          );
-
-          if (name && name.trim()) {
-            state.playerName =
-              name
-                .replace(/[^a-z0-9 ]/gi, "")
-                .trim()
-                .substring(0, 12);
-          }
-        }
-
-        scenes.current = SCENES.GAME;
-
         unlockAudio();
 
-        return;
+        scenes.current =
+          SCENES.GAME;
       }
+
+      return;
     }
 
-    // ==========================================
+    // ==============================
     // GAMEPLAY
-    // ==========================================
+    // ==============================
 
     if (
       scenes.current === SCENES.GAME
@@ -153,7 +138,9 @@ document.addEventListener(
 
       // jump
       if (e.code === "Space") {
-        handleJumpInput();
+        e.preventDefault();
+
+        tryJump();
       }
 
       // restart
@@ -170,6 +157,14 @@ document.addEventListener(
           SCENES.MENU;
 
         resetGame();
+      }
+
+      // mute
+      if (e.code === "KeyM") {
+        state.muted =
+          !state.muted;
+
+        setMuted(state.muted);
       }
     }
   }
@@ -201,42 +196,35 @@ function tryJump() {
 // INPUT
 
 
-    // --- GAMEPLAY ---
-  if (scenes.current === SCENES.GAME) {
-    const vel = world.components.vel.get(player);
+function handlePointerDown(e) {
 
-    if (
-      e.code === "Space" &&
-      Math.abs(vel.y) < 0.1
-    ) {
-      vel.y = -11;
-    }
+  e.preventDefault();
 
-    if (
-      e.code === "KeyR" &&
-      state.gameOver
-    ) {
-      resetGame();
-    }
+  unlockAudio();
 
-    // back to menu
-    if (e.code === "Escape") {
-      scenes.current = SCENES.MENU;
-      resetGame();
-    }
+  // MENU
+  if (
+    scenes.current === SCENES.MENU
+  ) {
+    scenes.current = SCENES.GAME;
+
+    return;
   }
 
+  // GAME OVER
+  if (state.gameOver) {
+    resetGame();
+
+    return;
+  }
+
+  // GAMEPLAY
+  tryJump();
+}
+
 canvas.addEventListener(
-  "touchstart",
-  (e) => {
-    e.preventDefault();
-
-    if (state.gameOver) {
-      return;
-    }
-
-    tryJump();
-  },
+  "pointerdown",
+  handlePointerDown,
   { passive: false }
 );
 
