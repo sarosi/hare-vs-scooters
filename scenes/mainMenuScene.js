@@ -1,3 +1,5 @@
+const isMobile =
+  "ontouchstart" in window;
 export function renderMainMenu(ctx) {
   // sky
   ctx.fillStyle = "#87ceeb";

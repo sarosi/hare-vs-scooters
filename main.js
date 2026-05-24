@@ -74,54 +74,60 @@ addComponent(world, player, "animation", {
   }
 });
 
-canvas.addEventListener("click", (e) => {
-  const rect = canvas.getBoundingClientRect();
 
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
+canvas.addEventListener(
+  "pointerdown",
+  (e) => {
+    const rect =
+      canvas.getBoundingClientRect();
 
-  // mute button bounds
-  if (
-    mouseX >= 900 &&
-    mouseX <= 970 &&
-    mouseY >= 20 &&
-    mouseY <= 56
-  ) {
-    state.muted = !state.muted;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-    setMuted(state.muted);
-  }
-});
-
-// INPUT
-  document.addEventListener("keydown", async (e) => {
-    await unlockAudio();
-
-    // --- MENU ---
+    // mute button
     if (
-      scenes.current === SCENES.MENU &&
-      e.code === "Enter"
+      x >= canvas.width - 90 &&
+      x <= canvas.width - 20 &&
+      y >= 20 &&
+      y <= 56
     ) {
-      // ask once if no player name
-    if (
-      !state.playerName ||
-      state.playerName === "PLAYER"
-    ) {
-      const name = prompt(
-        "Enter your name:"
-      );
+      state.muted = !state.muted;
 
-      if (name && name.trim()) {
-        state.playerName = name
-          .replace(/[^a-z0-9 ]/gi, "")
-          .trim()
-          .substring(0, 12);
-      }
-    }
+      setMuted(state.muted);
 
-      scenes.current = SCENES.GAME;
       return;
     }
+
+
+    tryJump();
+  }
+);
+
+function tryJump() {
+  if (state.gameOver) {
+    return;
+  }
+
+  const playerId = world.playerId;
+
+  const vel =
+    world.components.velocity.get(playerId);
+
+  const grounded =
+    world.components.grounded.has(playerId);
+
+  // allow jump only when grounded
+  if (grounded) {
+    vel.y = -11;
+
+    world.components.grounded.delete(playerId);
+
+    playJumpSound();
+  }
+}
+
+// INPUT
+
 
     // --- GAMEPLAY ---
   if (scenes.current === SCENES.GAME) {
@@ -147,7 +153,6 @@ canvas.addEventListener("click", (e) => {
       resetGame();
     }
   }
-});
 
 canvas.addEventListener(
   "touchstart",
@@ -158,7 +163,7 @@ canvas.addEventListener(
       return;
     }
 
-    jump(world);
+    tryJump();
   },
   { passive: false }
 );
@@ -166,7 +171,7 @@ canvas.addEventListener(
 function handleJumpInput() {
   if (state.gameOver) return;
 
-  jump(world);
+  tryJump();
 }
 
 document.addEventListener(
