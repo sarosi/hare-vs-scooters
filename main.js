@@ -22,6 +22,8 @@ import {
 } from "./services/leaderboard.js";
 import { setMuted } from "./audio/sounds.js";
 
+const isMobile =
+  "ontouchstart" in window;
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 

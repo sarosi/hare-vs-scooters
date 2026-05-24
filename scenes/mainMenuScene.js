@@ -37,7 +37,15 @@ export function renderMainMenu(ctx) {
   ctx.fillStyle = "#fff";
   ctx.font = "22px Arial";
 
-  ctx.fillText("SPACE → Jump", 500, 280);
+  ctx.fillText("Catch scooters from above", 500, 320);
+  ctx.fillText("You can miss 3 scooters", 500, 360);
+
+  if (isMobile) {
+    ctx.fillText("TAP ANYWHERE TO JUMP", 500, 280);
+  } else {
+    ctx.fillText("SPACE → Jump", 500, 280);
+  }
+  
   ctx.fillText("Catch scooters from above", 500, 320);
   ctx.fillText("You can miss 3 scooters", 500, 360);
 
@@ -46,7 +54,11 @@ export function renderMainMenu(ctx) {
 
   if (blink > 0) {
     ctx.font = "bold 30px Arial";
-    ctx.fillText("PRESS ENTER TO START", 500, 450);
+    if (isMobile) {
+      ctx.fillText("TAP TO START", 500, 450);
+    } else {
+      ctx.fillText("PRESS ENTER TO START", 500, 450);
+    }        
   }
 
   ctx.textAlign = "left";
