@@ -103,24 +103,96 @@ canvas.addEventListener(
   }
 );
 
+document.addEventListener(
+  "keydown",
+  (e) => {
+
+    // ==========================================
+    // MENU
+    // ==========================================
+
+    if (
+      scenes.current === SCENES.MENU
+    ) {
+
+      if (e.code === "Enter") {
+
+        // ask name once
+        if (
+          !state.playerName ||
+          state.playerName === "PLAYER"
+        ) {
+          const name = prompt(
+            "Enter your bunny name:"
+          );
+
+          if (name && name.trim()) {
+            state.playerName =
+              name
+                .replace(/[^a-z0-9 ]/gi, "")
+                .trim()
+                .substring(0, 12);
+          }
+        }
+
+        scenes.current = SCENES.GAME;
+
+        unlockAudio();
+
+        return;
+      }
+    }
+
+    // ==========================================
+    // GAMEPLAY
+    // ==========================================
+
+    if (
+      scenes.current === SCENES.GAME
+    ) {
+
+      // jump
+      if (e.code === "Space") {
+        handleJumpInput();
+      }
+
+      // restart
+      if (
+        e.code === "KeyR" &&
+        state.gameOver
+      ) {
+        resetGame();
+      }
+
+      // back to menu
+      if (e.code === "Escape") {
+        scenes.current =
+          SCENES.MENU;
+
+        resetGame();
+      }
+    }
+  }
+);
+
 function tryJump() {
-  if (state.gameOver) {
+
+  if (
+    state.gameOver ||
+    scenes.current !== SCENES.GAME
+  ) {
     return;
   }
 
-  const playerId = world.playerId;
-
   const vel =
-    world.components.velocity.get(playerId);
+    world.components.vel.get(player);
 
-  const grounded =
-    world.components.grounded.has(playerId);
+  // prevent double-jump
+  if (Math.abs(vel.y) < 0.1) {
 
-  // allow jump only when grounded
-  if (grounded) {
     vel.y = -11;
 
-    world.components.grounded.delete(playerId);
+    unlockAudio();
 
     playJumpSound();
   }
@@ -215,9 +287,6 @@ document.addEventListener(
 
     state.lastSpawn = 0;
     state.startTime = performance.now();
-
-    document.getElementById("score").textContent = 0;
-    document.getElementById("lives").textContent = 3;
   }
 
   function loop() {
